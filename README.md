@@ -7,21 +7,21 @@ The project can be implemented as a web application with UI or only as an API. W
 # Requirements
 The following requirements should be considered while designing and implementing the URL hashing system:
 
-URL length cannot be restricted
-Query parameters cannot be ignored
-Click tracking should be enabled
-Hashed URLs can be made privacy aware
-The generated URL might be single (limited) use only
-Design
-The URL hashing system can be designed using the following components:
+- URL length cannot be restricted
+- Query parameters cannot be ignored
+- Click tracking should be enabled
+- Hashed URLs can be made privacy aware
+- The generated URL might be single (limited) use only
+# Design
+- The URL hashing system can be designed using the following components:
 
-URL Hashing Algorithm: A hashing algorithm will be used to hash the original URL to a shorter URL. The hashing algorithm should be secure and produce unique hashes for each URL.
+- URL Hashing Algorithm: A hashing algorithm will be used to hash the original URL to a shorter URL. The hashing algorithm should be secure and produce unique hashes for each URL.
 
-Database: A database will be used to store the hashed URL and its corresponding original URL. We will use Django's built-in ORM to interact with the database.
+- Database: A database will be used to store the hashed URL and its corresponding original URL. We will use Django's built-in ORM to interact with the database.
 
-Click Tracking: We will implement a click tracking system to track clicks on the hashed URLs. When a user clicks on a hashed URL, we will redirect them to the original URL and record the click in the database.
+- Click Tracking: We will implement a click tracking system to track clicks on the hashed URLs. When a user clicks on a hashed URL, we will redirect them to the original URL and record the click in the database.
 
-Privacy: To make the hashed URLs privacy aware, we can add a time limit or a limited number of uses to the hashed URLs. Once the limit is reached, the hashed URL will expire.
+- Privacy: To make the hashed URLs privacy aware, we can add a time limit or a limited number of uses to the hashed URLs. Once the limit is reached, the hashed URL will expire.
 
 # Implementation
 The implementation of the URL hashing system can be divided into the following steps:
