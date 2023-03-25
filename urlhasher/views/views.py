@@ -1,10 +1,10 @@
-from django.shortcuts import redirect, get_object_or_404
+from django.shortcuts import redirect
 from django.views.decorators.csrf import csrf_exempt
-from django.views.decorators.clickjacking import xframe_options_exempt
 import json
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseNotFound
 from urlhasher.managers.url_view_manager import UrlViewManager
 from django.urls import reverse
+
 
 
 
@@ -26,9 +26,11 @@ def click_url(request, hashed_url):
     # get the hashed url object
     url_view_mgr = UrlViewManager()
     hashed_url_obj = url_view_mgr.check_click_url(hashed_url)
+
+    if hashed_url_obj is None:
+        return HttpResponseNotFound("non-existent hash value")
     
     # redirect to the original url
-    # return redirect(hashed_url_obj.long_url)
     return redirect('hasher:privacy_click_url', hashed_url=hashed_url)
 
 @csrf_exempt
@@ -36,12 +38,14 @@ def privacy_click_url(request, hashed_url):
     """check the privacy clicks."""
     # get the hashed url object
     url_view_mgr = UrlViewManager()
-    hashed_url_obj = url_view_mgr.check_number_of_click_available(hash)
+    hashed_url_obj = url_view_mgr.check_number_of_click_available(hashed_url)
     
     # check if the hashed url has already been clicked
-    if hashed_url_obj and hashed_url_obj.click_count > 0:
+    if hashed_url_obj and hashed_url_obj.clicks_remaining > 0:
         # redirect to the original url
         return redirect(hashed_url_obj.long_url)
+    elif hashed_url_obj is None:
+        return HttpResponseNotFound("non-existent hash value")
     else:
         return JsonResponse({'message': 'This hashed URL has already been clicked and is no longer available for use.'})
 

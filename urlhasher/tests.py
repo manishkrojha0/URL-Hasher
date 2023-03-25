@@ -1,39 +1,68 @@
 from django.test import TestCase
 from django.urls import reverse
-from django.utils.crypto import get_random_string
+import json
+from urlhasher.managers.url_manager import UrlManager
 
-from .models import HashedURL
+class TestUrls(TestCase):
+    """Test cases for URL_hashing."""
+    def setUp(self) -> None:
+        self.url = "http://127.0.0.1:8000/url-hasher/"
+        self.payload = json.dumps({
+            "long_url": "https://www.examples.com/",
+            "utm_source": "test",
+            "utm_medium": "test",
+            "utm_campaign": "test"
+        })
+        self.headers = {
+            'Content-Type': 'application/json'
+        }
+        self.url_manager = UrlManager()
+        return super().setUp()
+    def test_successful_url_hashing(self):
+        """Test for successfully url hashing."""
+        response = self.client.post(self.url, data=self.payload, content_type='application/json')
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('hashed_url', response.json())
 
+    def test_click_url(self):
+        # Test that a hashed URL can be clicked successfully
+        data = json.loads(self.payload)
+        long_url = data.get('long_url')
+        url_obj = self.url_manager.load_by_long_url(long_url)
+        if url_obj is None:
+            self.assertFalse("failed url hashed.")
+            hashed_url = None
+        else:
+            hashed_url = url_obj.hash
+        response = self.client.get(reverse('hasher:click_url', args=[hashed_url]))
+        self.assertEqual(response.status_code, 200)
 
-class HashedURLTestCase(TestCase):
-    def test_hash_url(self):
-        # Test that a URL with query parameters can be hashed and saved to the database
-        url = 'https://example.com/?utm_source=foo&utm_medium=bar'
-        hashed_url = HashedURL.objects.hash_url(url)
-        self.assertTrue(hashed_url.hash_value)
-        self.assertEqual(hashed_url.original_url, url)
+    def test_privacy_click_url(self):
+        # Test that a privacy hashed URL can be clicked successfully
+        data = json.loads(self.payload)
+        long_url = data.get('long_url')
+        url_obj = self.url_manager.load_by_long_url(long_url)
+        if url_obj is None:
+            self.assertFalse("failed url hashed.")
+            hashed_url = None
+        else:
+            hashed_url = url_obj.hash
+        response = self.client.get(reverse('hasher:privacy_click_url', args=[hashed_url]))
+        self.assertEqual(response.status_code, 200)
 
-    def test_redirect_to_original_url(self):
-        # Test that a hashed URL can be used to redirect to the original URL
-        url = 'https://example.com/?utm_source=foo&utm_medium=bar'
-        hashed_url = HashedURL.objects.hash_url(url)
-        response = self.client.get(reverse('hashed_url', args=[hashed_url.hash_value]))
-        self.assertRedirects(response, url, fetch_redirect_response=False)
+    def test_invalid_hashed_url(self):
+        # Test that an invalid hashed URL returns a 404 error
+        hashed_url = 'invalid_hash'
+        response = self.client.get(reverse('hasher:click_url', args=[hashed_url]))
+        self.assertEqual(response.status_code, 404)
 
-    def test_hashed_url_single_use(self):
-        # Test that a hashed URL can only be used once
-        url = 'https://example.com/?utm_source=foo&utm_medium=bar'
-        hashed_url = HashedURL.objects.hash_url(url)
-        response1 = self.client.get(reverse('hashed_url', args=[hashed_url.hash_value]))
-        response2 = self.client.get(reverse('hashed_url', args=[hashed_url.hash_value]))
-        self.assertRedirects(response1, url, fetch_redirect_response=False)
-        self.assertEqual(response2.status_code, 404)
+    def test_invalid_privacy_hashed_url(self):
+        # Test that an invalid privacy hashed URL returns a 404 error
+        hashed_url = 'invalid_hash'
+        response = self.client.get(reverse('hasher:privacy_click_url', args=[hashed_url]))
+        self.assertEqual(response.status_code, 404)
 
-    def test_hashed_url_privacy_aware(self):
-        # Test that a hashed URL can be made privacy aware by adding a salt
-        url = 'https://example.com/?utm_source=foo&utm_medium=bar'
-        salt = get_random_string(length=10)
-        hashed_url = HashedURL.objects.hash_url(url, salt=salt)
-        response = self.client.get(reverse('hashed_url', args=[hashed_url.hash_value]))
-        self.assertRedirects(response, url, fetch_redirect_response=False)
-        self.assertNotIn(salt, response.url)
+    def test_nonexistent_url(self):
+        # Test that a nonexistent URL returns a 404 error
+        response = self.client.get('/nonexistent/')
+        self.assertEqual(response.status_code, 404)

@@ -19,7 +19,7 @@ class UrlManager(object):
     def load_by_long_url(self, long_url):
         """Load url object by long_url."""
         try:
-            url_obj = Url.objects.get(long_url=long_url)
+            url_obj = Url.objects.filter(long_url=long_url)[0]
         except Exception:
             url_obj = None
 

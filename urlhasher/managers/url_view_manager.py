@@ -48,7 +48,9 @@ class UrlViewManager(object):
     def check_click_url(self, hash):
         """check the clicks of the url."""
         hashed_url_obj = self.url_manager.load_by_hash(hash)
-    
+        
+        if hashed_url_obj is None:
+            return None
         # increment the click count
         hashed_url_obj.clicks_remaining -= 1
         hashed_url_obj.save()
