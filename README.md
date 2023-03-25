@@ -26,14 +26,14 @@ The following requirements should be considered while designing and implementing
 # Implementation
 The implementation of the URL hashing system can be divided into the following steps:
 
-Create a Django project and app
-Define a URL model to store the original URL and the hashed URL
-Implement the URL hashing algorithm
-Create views for generating hashed URLs and redirecting to original URLs
-Implement the click tracking system
-Add privacy features to the hashed URLs
-Create a user interface or an API for the system
-Conclusion
+- Create a Django project and app
+- Define a URL model to store the original URL and the hashed URL
+- Implement the URL hashing algorithm
+- Create views for generating hashed URLs and redirecting to original URLs
+- Implement the click tracking system
+- Add privacy features to the hashed URLs
+- Create a user interface or an API for the system
+# Conclusion
 In this project, we have designed and implemented a URL hashing system using Django. The system can hash long URLs with UTM tracking, preserve query parameters, enable click tracking, and be made privacy aware. The system can be implemented as a web application with UI or only as an API.
 
 
