@@ -8,7 +8,7 @@ class Url(models.Model):
     utm_source = models.CharField(max_length=50, blank=True)
     utm_medium = models.CharField(max_length=50, blank=True)
     utm_campaign = models.CharField(max_length=50, blank=True)
-    clicks_remaining = models.IntegerField(default=1)
+    clicks_remaining = models.IntegerField(default=100)
     expiration_date = models.DateTimeField(null=True, blank=True)
     created_date = models.DateTimeField(auto_now_add=True)
 
