@@ -1,7 +1,6 @@
 """Manager file for urls."""
 from urlhasher.models.url import Url
-import random
-import string
+
 
 class UrlManager(object):
     """Class for url manager."""
@@ -57,6 +56,3 @@ class UrlManager(object):
         except Exception:
             return None
     
-    def generate_random_string(size=8, chars=string.ascii_lowercase + string.digits):
-        """Return random string generator."""
-        return ''.join(random.choice(chars) for x in range(size))

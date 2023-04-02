@@ -1,13 +1,14 @@
 """Manager file url view."""
 import hashlib
-from urlhasher.managers.url_manager import UrlManager
+from urlhasher.managers import url_manager, url_short_manager
 
 
 class UrlViewManager(object):
     """View manager of url."""
 
     def __init__(self) -> None:
-        self.url_manager = UrlManager()
+        self.url_manager = url_manager.UrlManager()
+        self.url_short_mgr = url_short_manager.UrlShortManager()
 
     def parse_and_hash_url(self, request_data):
         """Parse and hash url."""
@@ -29,7 +30,10 @@ class UrlViewManager(object):
                                     hash_value=hash_value,
                                     )
             
-            return hash_value
+            
+            url_short_obj = self.url_short_mgr.create_url_short(hash_value)
+
+            return url_short_obj.value if url_short_obj else None
 
         except Exception as e:
             return {'message': str(e)}
@@ -45,21 +49,26 @@ class UrlViewManager(object):
         
         return False
     
-    def check_click_url(self, hash):
+    def check_click_url(self, value):
         """check the clicks of the url."""
-        hashed_url_obj = self.url_manager.load_by_hash(hash)
-        
+        url_short_obj = self.url_short_mgr.load_by_value(value)
+        if url_short_obj is None:
+            return None
+        hashed_url_obj = self.url_manager.load_by_id(url_short_obj.url.id)
         if hashed_url_obj is None:
             return None
-        # increment the click count
+        # decrement the click count
         hashed_url_obj.clicks_remaining -= 1
         hashed_url_obj.save()
 
         return hashed_url_obj
     
-    def check_number_of_click_available(self, hash):
+    def check_number_of_click_available(self, value):
         """check the remaining clicks."""
-        hashed_url_obj = self.url_manager.load_by_hash(hash)
+        url_short_obj = self.url_short_mgr.load_by_value(value)
+        if url_short_obj is None:
+            return None
+        hashed_url_obj = self.url_manager.load_by_id(url_short_obj.url.id)
         if hashed_url_obj:
 
             if hashed_url_obj.clicks_remaining == 0:
