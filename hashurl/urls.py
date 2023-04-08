@@ -18,6 +18,7 @@ from django.urls import path, include
 from urlhasher import urls
 
 urlpatterns = [
+    
     path('admin/', admin.site.urls),
     path('url-hasher/', include('urlhasher.urls'))
 ]

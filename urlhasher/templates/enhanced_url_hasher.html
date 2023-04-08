@@ -1,0 +1,27 @@
+{% load static %}
+
+<form id="utm-form">
+  <div class="form-group">
+    <form action="" method="GET">
+
+        <label for="long_url">URL:</label>
+        <input type="text" id="long_url" name="long_url"><br>
+    
+        <label for="utm_source">Source:</label>
+        <input type="text" id="utm_source" name="utm_source"><br>
+      
+        <label for="utm_medium">Medium:</label>
+        <input type="text" id="utm_medium" name="utm_medium"><br>
+      
+        <label for="utm_campaign">Campaign:</label>
+        <input type="text" id="utm_campaign" name="utm_campaign"><br>
+      
+        <button type="submit">Generate UTM URL</button>
+      </form>
+      
+      {% if hashed_url %}
+      <p>Your HASHED URL:</p>
+      <p><a href="{{ hashed_url }}">{{ hashed_url }}</a></p>
+      {% endif %}
+      
+   

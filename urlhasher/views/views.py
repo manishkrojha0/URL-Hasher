@@ -1,9 +1,10 @@
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render
 from django.views.decorators.csrf import csrf_exempt
 import json
 from django.http import JsonResponse, HttpResponseNotFound
 from urlhasher.managers.url_view_manager import UrlViewManager
 from django.urls import reverse
+from django.utils.crypto import get_random_string
 
 
 
@@ -18,7 +19,20 @@ def hash_url(request):
             'hashed_url': request.build_absolute_uri(reverse('hasher:click_url', args=[value]))
         })
     else:
-        return JsonResponse({'message': "Please use post method."})
+        utm_params = {}
+        for param in ['long_url', 'utm_source', 'utm_medium', 'utm_campaign']:
+            value = request.GET.get(param)
+            if value:
+                utm_params[param] = value
+        url_view_mgr = UrlViewManager()
+        value = url_view_mgr.parse_and_hash_url(utm_params)
+        test_value = get_random_string(length=6)
+        hashed_url = request.build_absolute_uri(reverse('hasher:click_url', args=[value])) if value else None
+        # test_url = request.build_absolute_uri('/') + value
+        print("======>>>", test_value)
+        print("======>>>", hashed_url)
+        return render(request, 'url_hasher.html', {'hashed_url': hashed_url})
+        
 
 @csrf_exempt
 def click_url(request, value):
