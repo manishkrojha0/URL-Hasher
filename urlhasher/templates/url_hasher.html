@@ -7,19 +7,19 @@
   </head>
   <body>
     <h1>UTM Tracker URL Generator</h1>
-    <form action="" method="GET">
+    <form action="" method="POST">
 
       <label for="long_url">URL:</label>
       <input type="text" id="long_url" name="long_url">
 
-      <label for="utm_source">Source:</label>
+      {% comment %} <label for="utm_source">Source:</label>
       <input type="text" id="utm_source" name="utm_source">
     
       <label for="utm_medium">Medium:</label>
       <input type="text" id="utm_medium" name="utm_medium">
     
       <label for="utm_campaign">Campaign:</label>
-      <input type="text" id="utm_campaign" name="utm_campaign">
+      <input type="text" id="utm_campaign" name="utm_campaign"> {% endcomment %}
     
       <button type="submit">Generate UTM URL</button>
     </form>
