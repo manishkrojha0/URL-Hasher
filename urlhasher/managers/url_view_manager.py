@@ -23,15 +23,15 @@ class UrlViewManager(object):
             utm_campaign = request_data.get('utm_campaign')
             hash_input = f'{long_url}-{utm_source}-{utm_medium}-{utm_campaign}'.encode()
             hash_value = hashlib.sha256(hash_input).hexdigest()
-            self.url_manager.create(long_url=long_url,
+            url_obj = self.url_manager.create(long_url=long_url,
                                     utm_source=utm_source,
                                     utm_medium=utm_medium,
                                     utm_campaign=utm_campaign,
                                     hash_value=hash_value,
                                     )
             
-            
-            url_short_obj = self.url_short_mgr.create_url_short(hash_value)
+            print(url_obj.long_url, url_obj.hash)
+            url_short_obj = self.url_short_mgr.create_url_short(url_obj.hash)
 
             return url_short_obj.value if url_short_obj else None
 

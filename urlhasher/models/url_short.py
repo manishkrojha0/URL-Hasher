@@ -10,5 +10,5 @@ class UrlShort(models.Model):
                               null=False, 
                               blank=True
                               )
-    value = models.CharField(null=True, max_length=12, unique=True)
+    value = models.CharField(null=True, max_length=12)
         

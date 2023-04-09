@@ -29,7 +29,7 @@ def hash_url(request):
         test_value = get_random_string(length=6)
         hashed_url = request.build_absolute_uri(reverse('hasher:click_url', args=[value])) if value else None
         # test_url = request.build_absolute_uri('/') + value
-        print("======>>>", test_value)
+        print("======>>>", value)
         print("======>>>", hashed_url)
         return render(request, 'url_hasher.html', {'hashed_url': hashed_url})
         
