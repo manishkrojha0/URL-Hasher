@@ -5,6 +5,7 @@ from django.http import JsonResponse, HttpResponseNotFound
 from urlhasher.managers.url_view_manager import UrlViewManager
 from django.urls import reverse
 from django.utils.crypto import get_random_string
+from urllib.parse import urlparse, parse_qs
 
 
 
@@ -12,26 +13,50 @@ from django.utils.crypto import get_random_string
 @csrf_exempt
 def hash_url(request):
     if request.method == 'POST':
-        data = json.loads(request.body.decode('utf-8'))
+        print("-----", request.POST.get('long_url'))
+        long_url = request.POST.get('long_url')
+        utm_source = request.POST.get('utm_source')
+        utm_medium = request.POST.get('utm_medium')
+        utm_campaign = request.POST.get('utm_campaign')
+        parsed_url = urlparse(long_url)
+        query_params = parse_qs(parsed_url.query)
+        print(query_params)
+         # Extract UTM tracking parameters from query string
+        utm_params = {}
+        for key, value in query_params.items():
+            if key.startswith('utm_'):
+                utm_params[key] = value[0]
+        data = {
+            "long_url": long_url,
+            "utm_source": utm_params.get('utm_source'),
+            "utm_medium": utm_params.get('utm_medium'),
+            "utm_campaign": utm_params.get('utm_campaign')
+        }
+        
+        print("data====", data)
+        # data = json.loads(request.body.decode('utf-8')) 
         url_view_mgr = UrlViewManager()
         value = url_view_mgr.parse_and_hash_url(data)
-        return JsonResponse({
-            'hashed_url': request.build_absolute_uri(reverse('hasher:click_url', args=[value]))
-        })
-    else:
-        utm_params = {}
-        for param in ['long_url', 'utm_source', 'utm_medium', 'utm_campaign']:
-            value = request.GET.get(param)
-            if value:
-                utm_params[param] = value
-        url_view_mgr = UrlViewManager()
-        value = url_view_mgr.parse_and_hash_url(utm_params)
-        test_value = get_random_string(length=6)
+        # return JsonResponse({
+        #     'hashed_url': request.build_absolute_uri(reverse('hasher:click_url', args=[value]))
+        # })
         hashed_url = request.build_absolute_uri(reverse('hasher:click_url', args=[value])) if value else None
-        # test_url = request.build_absolute_uri('/') + value
-        print("======>>>", value)
-        print("======>>>", hashed_url)
         return render(request, 'url_hasher.html', {'hashed_url': hashed_url})
+
+    else:
+        # utm_params = {}
+        # for param in ['long_url', 'utm_source', 'utm_medium', 'utm_campaign']:
+        #     value = request.GET.get(param)
+        #     if value:
+        #         utm_params[param] = value
+        # url_view_mgr = UrlViewManager()
+        # value = url_view_mgr.parse_and_hash_url(utm_params)
+        # test_value = get_random_string(length=6)
+        # hashed_url = request.build_absolute_uri(reverse('hasher:click_url', args=[value])) if value else None
+        # # test_url = request.build_absolute_uri('/') + value
+        # print("======>>>", value)
+        # print("======>>>", hashed_url)
+        return render(request, 'url_hasher.html')
         
 
 @csrf_exempt
