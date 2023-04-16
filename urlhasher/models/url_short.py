@@ -6,9 +6,9 @@ class UrlShort(models.Model):
     url = models.ForeignKey('Url', 
                               related_name="url_id", 
                               on_delete=models.DO_NOTHING, 
-                              unique=True, 
+                              unique=False, 
                               null=False, 
-                              blank=True
+                              blank=False
                               )
     value = models.CharField(null=True, max_length=12)
         

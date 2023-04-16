@@ -44,6 +44,7 @@ class UrlManager(object):
             utm_medium = kwargs.get('utm_medium')
             utm_campaign = kwargs.get('utm_campaign')
             hash_value = kwargs.get('hash_value')
+            print("yyyyyyyyyyyyyyyyyyyyyyy")
             url = Url.objects.update_or_create(
                 long_url=long_url,
                 hash=hash_value,
@@ -51,10 +52,12 @@ class UrlManager(object):
                 utm_medium=utm_medium,
                 utm_campaign=utm_campaign,
             )
+            print("url === >>", url)
             if len(url) > 1:
                 return url[0]
             else:
                 url.save()
-        except Exception:
+        except Exception as e:
+            print(e)
             return None
     

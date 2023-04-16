@@ -44,11 +44,12 @@ class UrlShortManager(object):
             url_obj = Url.objects.get(hash=hash)
             value = self.generate_random_string()
             url_short_obj = UrlShort.objects.filter(url = url_obj)
-            if url_short_obj:
-                return url_short_obj[0]
-            else:
-                url_short_obj = UrlShort.objects.create(url_id=url_obj.id, value=value)
-        except Exception:
+            # if url_short_obj:
+            #     return url_short_obj[0]
+            # else:
+            url_short_obj = UrlShort.objects.create(url_id=url_obj.id, value=value)
+        except Exception as e:
+            print(e)
             return None
         
         return url_short_obj

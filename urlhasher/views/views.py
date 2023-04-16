@@ -15,9 +15,8 @@ def hash_url(request):
     if request.method == 'POST':
         print("-----", request.POST.get('long_url'))
         long_url = request.POST.get('long_url')
-        utm_source = request.POST.get('utm_source')
-        utm_medium = request.POST.get('utm_medium')
-        utm_campaign = request.POST.get('utm_campaign')
+        if not long_url:
+            return 
         parsed_url = urlparse(long_url)
         query_params = parse_qs(parsed_url.query)
         print(query_params)

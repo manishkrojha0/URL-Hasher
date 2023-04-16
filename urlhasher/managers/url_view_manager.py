@@ -23,6 +23,7 @@ class UrlViewManager(object):
             utm_campaign = request_data.get('utm_campaign')
             hash_input = f'{long_url}-{utm_source}-{utm_medium}-{utm_campaign}'.encode()
             hash_value = hashlib.sha256(hash_input).hexdigest()
+            print(len(long_url))
             url_obj = self.url_manager.create(long_url=long_url,
                                     utm_source=utm_source,
                                     utm_medium=utm_medium,
@@ -78,6 +79,12 @@ class UrlViewManager(object):
               hashed_url_obj.save()  
 
         return hashed_url_obj
-        
-
-
+    
+    def to_base_62(self, deci):
+        s = '012345689abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
+        hash_str = ''
+        while deci > 0:
+            hash_str= s[deci % 62] + hash_str
+            deci /= 62
+        return hash_str
+    
